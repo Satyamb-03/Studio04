@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    container_name: docker-node-mysql
+    build: .
+    ports:
+      - "8080:3000"
+    links:
+      - mysql-dev
+    depends_on:
+      - mysql-dev
+    restart: always
+    command: npm start
+
+  mysql-dev:
+    container_name: mysql-container
+    image: mysql:8.0.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: node_crud
+    ports:
+      - "3309:3306"  # Map host port 3309 to container port 3306
+    volumes: ['./:/usr/src/app']
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-container
+    environment:
+      PMA_HOST: mysql-dev  # Link to the mysql-dev service
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root  # Root password for MySQL
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "8081:80"  # Expose phpMyAdmin on port 8081
+    depends_on:
+      - mysql-dev
