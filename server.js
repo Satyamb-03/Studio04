@@ -46,19 +46,15 @@ conn.connect(function(err) {
 
     const siteTitle = 'Studio04 | Node.js CRUD App with MySQL and Docker';
 
-    /* Home route (requires authentication) */
+    /* Home route - No authentication required */
     app.get('/', (req, res) => {
-      if (req.isAuthenticated()) {
-        conn.query("SELECT * FROM events ORDER BY e_start_date DESC", (err, result) => {
-          res.render('pages/index', {
-            siteTitle: siteTitle,
-            pageTitle: 'Events list',
-            items: result
-          });
+      conn.query("SELECT * FROM events ORDER BY e_start_date DESC", (err, result) => {
+        res.render('pages/index', {
+          siteTitle: siteTitle,
+          pageTitle: 'Events list',
+          items: result
         });
-      } else {
-        res.redirect('/signin');
-      }
+      });
     });
 
     /* Show add event page */
@@ -72,7 +68,7 @@ conn.connect(function(err) {
 
     /* Post event to database */
     app.post('/event/add', (req, res) => {
-      var query = 'INSERT INTO events (e_name, e_start_date, e_end_date, e_added_date, e_desc, e_location) VALUES (';
+      var query = 'INSERT INTO events (e_name, e_start_date, e_end_date, e_added_date, e_desc, e_location) VALUES ('; 
       query += ' "' + req.body.e_name + '", ';
       query += ' "' + dateFormat(req.body.e_start_date, "yyyy-mm-dd") + '", ';
       query += ' "' + dateFormat(req.body.e_end_date, "yyyy-mm-dd") + '", ';
