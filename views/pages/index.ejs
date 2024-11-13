@@ -1,12 +1,18 @@
-<% include ../partials/header.ejs %>
+<% include ../partials/header.ejs %> 
+<link rel="stylesheet" type="text/css" href="/styles/your-stylesheet.css">  
 
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <a href="/event/add" class="btn btn-success btn-lg">Add new event</a>
+      <h1>Welcome to the Event Management System</h1>
+      <p>Manage and view all your events from here.</p>
+      <a href="/event/add" class="btn btn-success btn-lg">Add New Event</a>
+      <a href="/signin" class="btn btn-primary">Sign In</a>
       <br/><br/>
     </div>
+
     <div class="col-md-12">
+      <h2>Upcoming Events</h2>
       <% if(items.length > 0) { %>
         <table class="table table-hover">
           <tr>
@@ -31,8 +37,8 @@
             </tr>
           <% }) %>
         </table>
-      <% }else{ %>
-        <p><strong>Sorry, no records available yet :( </strong></p>
+      <% } else { %>
+        <p><strong>No events available yet. Add a new event!</strong></p>
       <% } %>
     </div>
   </div>

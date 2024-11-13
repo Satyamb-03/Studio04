@@ -10,15 +10,20 @@
   "author": "Manjil Tamang",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "bootstrap": "^3.3.7",
     "dateformat": "^3.0.3",
-    "ejs": "^2.6.1",
+    "ejs": "^2.7.4",
     "express": "^4.16.4",
     "express-partials": "^0.3.0",
+    "express-session": "^1.18.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.3.1",
     "mysql": "^2.16.0",
+    "mysql2": "^3.11.4",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "tether": "^1.4.5"
   }
 }
