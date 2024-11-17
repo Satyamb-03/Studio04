@@ -189,6 +189,16 @@ conn.connect(function(err) {
       });
     });
 
+    app.get('/userdashboard', (req, res) => {
+      res.render('pages/userdashboard', {
+        siteTitle: 'User Dashboard', 
+        pageTitle: 'User Dashboard', 
+        items: []
+      });
+    });
+    
+    
+
     app.listen(3000, function() {
       console.log('Server started on port 3000 | 8080 if running on docker...');
     });
