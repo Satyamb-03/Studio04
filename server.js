@@ -236,6 +236,34 @@ conn.connect((err) => {
     });
   });
 
+  app.get('/userdashboard', (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.redirect('/signin'); // Redirect to sign in page if not authenticated
+    }
+  
+    const userId = req.user.id; // Assuming you're using user authentication with req.user
+  
+    // You can fetch user-specific events if needed
+    conn.query('SELECT * FROM events ORDER BY e_start_date DESC', (err, result) => {
+      if (err) {
+        console.error('Error fetching events:', err);
+        return res.status(500).send('Error fetching events');
+      }
+  
+      result.forEach(event => {
+        event.e_start_date = dateFormat(event.e_start_date, 'yyyy-mm-dd');
+        event.e_end_date = dateFormat(event.e_end_date, 'yyyy-mm-dd');
+      });
+  
+      res.render('pages/userdashboard', {
+        siteTitle,
+        pageTitle: 'User Dashboard',
+        items: result, // Pass events or any other data you want to show
+      });
+    });
+  });
+  
+
   app.listen(3000, () => {
     console.log('Server started on port 3000 | 8080 if running on Docker...');
   });
