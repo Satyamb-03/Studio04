@@ -221,13 +221,24 @@ conn.connect((err) => {
     res.render('pages/signin', { siteTitle, pageTitle: 'Sign In' });
   });
 
-  app.post(
-    '/signin',
-    passport.authenticate('local', {
-      successRedirect: '/',
-      failureRedirect: '/signin',
-    })
-  );
+  app.post('/signin', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) return next(err);
+      if (!user) return res.redirect('/signin'); // Redirect to sign-in page if authentication fails
+  
+      req.logIn(user, (err) => {
+        if (err) return next(err);
+  
+        // Role-based redirection
+        if (user.role === 'attendee') {
+          return res.redirect('/userdashboard');
+        }
+        return res.redirect('/');
+      });
+    })(req, res, next);
+  });
+  
+  
 
   app.get('/logout', (req, res) => {
     req.logout((err) => {
