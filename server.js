@@ -237,36 +237,31 @@ conn.connect((err) => {
       });
     })(req, res, next);
   });
-  
-
-
-
-
-
+ 
   app.get('/admindashboard', (req, res) => {
     if (!req.isAuthenticated() || req.user.role !== 'admin') {
       return res.redirect('/signin'); // Redirect to sign in page if not authenticated or not an admin
     }
-  
+
     // Fetch events
     conn.query('SELECT * FROM events ORDER BY e_start_date DESC', (err, events) => {
       if (err) {
         console.error('Error fetching events:', err);
         return res.status(500).send('Error fetching events');
       }
-  
+
       // Fetch users
       conn.query('SELECT * FROM users ORDER BY created_at DESC', (err, users) => {
         if (err) {
           console.error('Error fetching users:', err);
           return res.status(500).send('Error fetching users');
         }
-  
+
         events.forEach(event => {
           event.e_start_date = dateFormat(event.e_start_date, 'yyyy-mm-dd');
           event.e_end_date = dateFormat(event.e_end_date, 'yyyy-mm-dd');
         });
-  
+
         res.render('pages/admindashboard', {
           siteTitle,
           pageTitle: 'Admin Dashboard',
@@ -276,10 +271,7 @@ conn.connect((err) => {
       });
     });
   });
-
-
   
-
   app.get('/logout', (req, res) => {
     req.logout((err) => {
       if (err) return res.status(500).send('Error logging out');
