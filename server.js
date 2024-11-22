@@ -69,7 +69,18 @@ conn.connect((err) => {
     )`;
   conn.query(createEventsTable);
 
-  
+  const createJoinTable = `
+    CREATE TABLE IF NOT EXISTS user_events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      event_id INT NOT NULL,
+      username VARCHAR(255) NOT NULL,
+      message VARCHAR(200) NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (event_id) REFERENCES events(e_id),
+      UNIQUE (user_id, event_id) -- Ensure unique user-event pairs
+    )`;
+  conn.query(createJoinTable)
 
   /* Site title */
   const siteTitle = 'Studio04 | Node.js CRUD App with MySQL and Docker';
@@ -305,6 +316,93 @@ conn.connect((err) => {
       });
     });
   });
+  
+  //Get events attended by the user
+  app.get('/user/events/:userId', (req, res) => {
+    const userId = req.params.userId;
+  
+    const query = `
+      SELECT e.* 
+      FROM events e
+      JOIN user_events ue ON e.e_id = ue.event_id
+      WHERE ue.user_id = ?`;
+    
+    conn.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error('Error fetching user events:', err);
+        return res.status(500).send('Error fetching events');
+      }
+  
+      results.forEach(event => {
+        event.e_start_date = dateFormat(event.e_start_date, 'yyyy-mm-dd');
+        event.e_end_date = dateFormat(event.e_end_date, 'yyyy-mm-dd');
+      });
+  
+      res.render('pages/user-events', {
+        siteTitle,
+        pageTitle: 'Your Events',
+        items: results,
+      });
+    });
+  });
+  
+  //Get users attending an event
+  app.get('/event/attendees/:eventId', (req, res) => {
+    const eventId = req.params.eventId;
+  
+    const query = `
+      SELECT u.username 
+      FROM users u
+      JOIN user_events ue ON u.id = ue.user_id
+      WHERE ue.event_id = ?`;
+    
+    conn.query(query, [eventId], (err, results) => {
+      if (err) {
+        console.error('Error fetching event attendees:', err);
+        return res.status(500).send('Error fetching attendees');
+      }
+  
+      res.render('pages/event-attendees', {
+        siteTitle,
+        pageTitle: 'Event Attendees',
+        attendees: results,
+      });
+    });
+  });
+  
+  app.post('/event/join/:id', (req, res) => {
+    const eventId = req.params.id;
+    const userId = req.user.id; // Assuming user is authenticated
+    const username = req.user.username;
+    const message = req.body.message;
+  
+    const query = `
+      INSERT INTO user_events (user_id, event_id, username, message)
+      VALUES (?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE message = VALUES(message)`; // Update if the user already joined
+  
+    const values = [userId, eventId, username, message];
+  
+    conn.query(query, values, (err, result) => {
+      if (err) {
+        console.error('Error saving join message:', err);
+        return res.status(500).json({ message: 'Error saving message', error: err });
+      }
+  
+      // Log the result for debugging
+      console.log('Join result:', result);
+  
+      // Send a success response if the data is saved
+      res.status(200).json({
+        message: 'Successfully joined the event',
+        eventId: eventId,
+        username: username,
+        userMessage: message,
+      });
+    });
+  });
+  
+  
   
 
   app.listen(3000, () => {
