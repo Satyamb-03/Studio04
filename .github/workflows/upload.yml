@@ -41,9 +41,9 @@ jobs:
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.4
       with:
-        host: 95.111.219.120
-        username: vaidik
-        password: ${{ secrets.SERVER_PASSWORD }}
+        host: 95.111.219.120  # Replace with the server's IP address
+        username: satyam  # SSH username
+        password: ${{ secrets.SERVER_PASSWORD }}  # Secret for SSH password
         script: |
           set -e
           echo "Checking if Docker is installed on the server..."
@@ -52,7 +52,7 @@ jobs:
             sudo apt update && sudo apt install -y docker.io
           fi
           echo "Docker is installed and ready."
-
+          
           echo "Navigating to Photography-App directory..."
           cd Photography-App || {
             echo "Folder not found. Cloning private repository.";
@@ -77,9 +77,9 @@ jobs:
     - name: Verify Deployment
       uses: appleboy/ssh-action@v0.1.4
       with:
-        host: 95.111.219.120
-        username: vaidik
-        password: ${{ secrets.SERVER_PASSWORD }}
+        host: 95.111.219.120  # Replace with the server's IP address
+        username: satyam  # SSH username
+        password: ${{ secrets.SERVER_PASSWORD }}  # Secret for SSH password
         script: |
           echo "Verifying running containers..."
           docker ps
@@ -92,7 +92,7 @@ jobs:
       if: failure() # Ensure 'failure()' is correctly used
       uses: slackapi/slack-github-action@v1.23.0
       with:
-        botToken: ${{ secrets.SLACK_BOT_TOKEN }}  # Use 'botToken' instead of 'slack-bot-token'
+        botToken: ${{ secrets.SLACK_BOT_TOKEN }}  # Corrected to 'botToken'
         channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
         slack-message: |
           Deployment failed for Node.js App.
