@@ -1,0 +1,93 @@
+<% include ../partials/header.ejs %>
+<link rel="stylesheet" type="text/css" href="/styles/your-stylesheet.css">
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Admin Dashboard</h1>
+      <a href="/event/add" class="btn btn-success btn-lg">Add New Event</a>
+      <br/><br/>
+    </div>
+
+    <div class="col-md-12">
+      <h2>Upcoming Events</h2>
+      <% if (events.length > 0) { %>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Location</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th colspan="2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% events.forEach(function(event) { %>
+              <tr>
+                <td><%= event.e_id %></td>
+                <td><%= event.e_name %></td>
+                <td><%= event.e_desc %></td>
+                <td><%= event.e_location %></td>
+                <td><%= event.e_start_date %></td>
+                <td><%= event.e_end_date %></td>
+                <td>
+                  <a href="/event/edit/<%= event.e_id %>" class="btn btn-sm btn-warning">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                  </a>
+                </td>
+                <td>
+                  <a href="/event/delete/<%= event.e_id %>" class="btn btn-sm btn-danger " onclick="return confirm('Are you sure to delete?')">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p><strong>No events available yet. Add a new event!</strong></p>
+      <% } %>
+    </div>
+
+    <div class="col-md-12">
+      <h2>Registered Users</h2>
+      <% if (users.length > 0) { %>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(user) { %>
+              <tr>
+                <td><%= user.id %></td>
+                <td><%= user.username %></td>
+                <td><%= user.role %></td>
+                <td><%= user.created_at %></td>
+                <td>
+                 
+                    
+                  <a href="/user/delete/<%= user.id %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete this user?')">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p><strong>No registered users found.</strong></p>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% include ../partials/footer.ejs %>

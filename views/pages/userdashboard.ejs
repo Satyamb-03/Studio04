@@ -17,26 +17,26 @@
             <th>Name</th>
             <th>Description</th>
             <th>Location</th>
-            <th>Start Date</th>
-            <th>Start Time</th>
-            <th>End Date</th>
-            <th>End Time</th>
-            <th colspan="1">Actions</th>
+            <th colspan="2">Actions</th>
           </tr>
           <% items.forEach(function(item, index){ %>
             <tr>
               <td><%= item.e_id %></td>
-              <td><%= item.e_name %></td>
+              <td>
+                <form>
+                  <div class="form-group">
+                    <label for="inputName<%= index %>" class="control-label">Name:</label>
+                    <input class="form-control" id="inputName<%= index %>" type="text" name="e_name" value="<%= item.e_name %>" placeholder="Event Title" required/>
+                  </div>
+                </form>
+              </td>
               <td><%= item.e_desc %></td>
               <td><%= item.e_location %></td>
-              <td><%= item.e_start_date %></td>
-              <td><%= item.e_start_time %></td>
-              <td><%= item.e_end_date %></td>
-              <td><%= item.e_end_time %></td>
               <td>
-                <a href="/event/join/<%= item.e_id %>" class="btn btn-sm btn-success">
-                  Join
-                </a>
+                <a href="/event/edit/<%= item.e_id %>" class="btn btn-sm btn-warning"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+              </td>
+              <td>
+                <a href="/event/delete/<%= item.e_id %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete?')"><i class="fa fa-trash" aria-hidden="true"></i></a>
               </td>
             </tr>
           <% }) %>
