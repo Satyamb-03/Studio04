@@ -89,8 +89,51 @@
     </div>
   </div>
 </div>
+<div class="col-md-12">
+  <a href="/user/joined-events" class="btn btn-primary">View Your Joined Events</a>
+</div>
 
 
 <% include ../partials/footer.ejs %>
 
 
+<script>
+  function submitJoinForm(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const form = event.target;
+    const message = form.message.value; // Get the message from the form
+    const eventId = form.getAttribute('data-event-id'); // Get the event ID from the modal
+
+    fetch(`/event/join/${eventId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }), // Send the message as JSON
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Failed to join event');
+    })
+    .then(data => {
+      console.log(data.message); // Log success message
+      // Optionally, you could refresh the page or update the UI to reflect the new state
+      location.reload(); // Reload the page to see updated events
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+
+  // Attach event listener to the modal when it's shown
+  const joinFormModal = document.getElementById('joinFormModal');
+  joinFormModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget; // Button that triggered the modal
+    const eventId = button.getAttribute('data-event-id'); // Extract info from data-* attributes
+    const joinForm = document.getElementById('joinForm');
+    joinForm.setAttribute('data-event-id', eventId); // Set event ID in the form
+  });
+</script>

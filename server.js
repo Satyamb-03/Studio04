@@ -316,6 +316,25 @@ conn.connect((err) => {
       });
     });
   });
+
+  // Add this route in your server.js file
+app.get('/user/delete/:id', (req, res) => {
+  const userId = req.params.id;
+
+  const query = 'DELETE FROM users WHERE id = ?';
+  conn.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).send('Error deleting user');
+    }
+
+    if (result.affectedRows) {
+      res.redirect('/admindashboard'); // Redirect back to admin dashboard
+    } else {
+      res.status(404).send('User  not found');
+    }
+  });
+});
   
   //Get events attended by the user
   app.get('/user/events/:userId', (req, res) => {
@@ -398,6 +417,41 @@ conn.connect((err) => {
         eventId: eventId,
         username: username,
         userMessage: message,
+      });
+    });
+  });
+
+
+
+
+  app.get('/user/joined-events', (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.redirect('/signin'); // Redirect to sign in page if not authenticated
+    }
+  
+    const userId = req.user.id;
+  
+    const query = `
+      SELECT e.*, ue.message 
+      FROM events e
+      JOIN user_events ue ON e.e_id = ue.event_id
+      WHERE ue.user_id = ?`;
+  
+    conn.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error('Error fetching joined events:', err);
+        return res.status(500).send('Error fetching events');
+      }
+  
+      results.forEach(event => {
+        event.e_start_date = dateFormat(event.e_start_date, ' yyyy-mm-dd');
+        event.e_end_date = dateFormat(event.e_end_date, 'yyyy-mm-dd');
+      });
+  
+      res.render('pages/joined-events', {
+        siteTitle,
+        pageTitle: 'Your Joined Events',
+        items: results,
       });
     });
   });
