@@ -65,7 +65,9 @@ conn.connect((err) => {
       e_end_date DATE NOT NULL,
       e_added_date DATE,
       e_desc TEXT,
-      e_location VARCHAR(200)
+      e_location VARCHAR(200),
+      e_start_time TIME NOT NULL,
+      e_end_time TIME NOT NULL
     )`;
   conn.query(createEventsTable);
 
@@ -231,23 +233,45 @@ conn.connect((err) => {
         if (user.role === 'attendee') {
           return res.redirect('/userdashboard');
         }
+        if (user.role === 'admin'){
+          return res.redirect('/admindashboard')
+        }
         return res.redirect('/');
       });
     })(req, res, next);
   });
- 
+
   app.get('/admindashboard', (req, res) => {
     if (!req.isAuthenticated() || req.user.role !== 'admin') {
       return res.redirect('/signin'); // Redirect to sign in page if not authenticated or not an admin
     }
-
     // Fetch events
     conn.query('SELECT * FROM events ORDER BY e_start_date DESC', (err, events) => {
       if (err) {
         console.error('Error fetching events:', err);
         return res.status(500).send('Error fetching events');
-      }
-
+      }  
+      // Fetch users
+      conn.query('SELECT * FROM users ORDER BY created_at DESC', (err, users) => {
+        if (err) {
+          console.error('Error fetching users:', err);
+          return res.status(500).send('Error fetching users');
+        }
+  
+        events.forEach(event => {
+          event.e_start_date = dateFormat(event.e_start_date, 'yyyy-mm-dd');
+          event.e_end_date = dateFormat(event.e_end_date, 'yyyy-mm-dd');
+        });
+  
+        res.render('pages/admindashboard', {
+          siteTitle,
+          pageTitle: 'Admin Dashboard',
+          events: events,
+          users: users,
+        });
+      });
+    });
+  });
       // Fetch users
       conn.query('SELECT * FROM users ORDER BY created_at DESC', (err, users) => {
         if (err) {
