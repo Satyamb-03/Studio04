@@ -37,13 +37,13 @@ jobs:
     - name: Run Linter
       run: npm run lint
 
-    # Step 6: Deploy to Server
-    - name: Deploy to Server
+    # Step 6: Deploy to UpCloud Server
+    - name: Deploy to UpCloud Server
       uses: appleboy/ssh-action@v0.1.4
       with:
-        host: 95.111.219.120  # Replace with the server's IP address
-        username: satyam  # SSH username
-        password: ${{ secrets.SERVER_PASSWORD }}  # Secret for SSH password
+        host: ${{ secrets.UPCLOUD_SERVER_IP }} # Add your server IP in GitHub Secrets
+        username: ${{ secrets.UPCLOUD_SERVER_USERNAME }} # Add your SSH username in GitHub Secrets
+        password: ${{ secrets.UPCLOUD_SERVER_PASSWORD }} # Add your SSH password in GitHub Secrets
         script: |
           set -e
           echo "Checking if Docker is installed on the server..."
@@ -52,14 +52,17 @@ jobs:
             sudo apt update && sudo apt install -y docker.io
           fi
           echo "Docker is installed and ready."
-          
+
           echo "Navigating to Studio04 directory..."
-          cd Studio04 || {
-            echo "Folder not found. Cloning private repository.";
-            git clone "https://github.com/Satyamb-03/Studio04.git";
-          }
+          if [ ! -d "Studio04" ]; then
+            echo "Directory not found. Cloning repository..."
+            git clone https://github.com/Satyamb-03/Studio04.git
+          fi
+          cd Studio04
 
           echo "Pulling the latest changes from the repository..."
+          git reset --hard
+          git clean -fd
           git pull origin main
 
           echo "Stopping any running containers..."
@@ -68,18 +71,15 @@ jobs:
           echo "Building and starting containers..."
           docker-compose up --build -d
 
-          //echo "Running server-side tests..."
-          //docker exec moe-nodejs-app npm test || { echo "Server-side tests failed."; exit 1; }
+          echo "Deployment completed successfully."
 
-          //echo "Deployment completed successfully."
-
-    # Step 7: Post-Deployment Verification
+    # Step 7: Verify Deployment
     - name: Verify Deployment
       uses: appleboy/ssh-action@v0.1.4
       with:
-        host: 95.111.219.120  # Replace with the server's IP address
-        username: satyam  # SSH username
-        password: ${{ secrets.SERVER_PASSWORD }}  # Secret for SSH password
+        host: ${{ secrets.UPCLOUD_SERVER_IP }}
+        username: ${{ secrets.UPCLOUD_SERVER_USERNAME }}
+        password: ${{ secrets.UPCLOUD_SERVER_PASSWORD }}
         script: |
           echo "Verifying running containers..."
           docker ps
@@ -87,12 +87,12 @@ jobs:
           echo "Checking application health..."
           curl -I http://localhost:8080 || { echo "Application is not responding."; exit 1; }
 
-    # Step 8: Notify on Failure (Optional)
+    # Step 8: Notify on Failure
     - name: Notify on Failure
-      if: failure() # Ensure 'failure()' is correctly used
+      if: failure()
       uses: slackapi/slack-github-action@v1.23.0
       with:
-        botToken: ${{ secrets.SLACK_BOT_TOKEN }}  # Corrected to 'botToken'
+        botToken: ${{ secrets.SLACK_BOT_TOKEN }}
         channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
         slack-message: |
           Deployment failed for Node.js App.
