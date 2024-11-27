@@ -20,5 +20,5 @@ jobs:
         env:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
         run: |
-          # Syncing all files except for node_modules and including the test file
-          sshpass -p "$SSH_PASSWORD" rsync -avz --delete --exclude='node_modules' --include='test/example.test.js' ./ satyam@95.111.219.120:~/Studio04
+          # Disable strict host key checking
+          sshpass -p "$SSH_PASSWORD" rsync -avz --delete --exclude='node_modules' --include='test/example.test.js' -e "ssh -o StrictHostKeyChecking=no" ./ satyam@95.111.219.120:~/Studio04
