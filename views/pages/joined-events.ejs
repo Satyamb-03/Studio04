@@ -1,0 +1,44 @@
+<% include ../partials/header.ejs %>
+<link rel="stylesheet" type="text/css" href="/styles/your-stylesheet.css">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Your Joined Events</h1>
+      <br/><br/>
+    </div>
+
+    <div class="col-md-12">
+      <% if(items.length > 0) { %>
+        <table class="table table-hover">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Message</th>
+          </tr>
+          <% items.forEach(function(item){ %>
+            <tr>
+              <td><%= item.e_id %></td>
+              <td><%= item.e_name %></td>
+              <td><%= item.e_desc %></td>
+              <td><%= item.e_location %></td>
+              <td><%= item.e_start_date %></td>
+              <td><%= item.e_end_date %></td>
+              <td><%= item.message %></td>
+            </tr>
+          <% }) %>
+        </table>
+      <% } else { %>
+        <p><strong>You have not joined any events yet.</strong></p>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% include ../partials/footer.ejs %>
