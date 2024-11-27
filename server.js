@@ -65,7 +65,9 @@ conn.connect((err) => {
       e_end_date DATE NOT NULL,
       e_added_date DATE,
       e_desc TEXT,
-      e_location VARCHAR(200)
+      e_location VARCHAR(200),
+      e_start_time TIME NOT NULL,
+      e_end_time TIME NOT NULL
     )`;
   conn.query(createEventsTable);
 
@@ -233,12 +235,13 @@ conn.connect((err) => {
         if (user.role === 'attendee') {
           return res.redirect('/userdashboard');
         }
+        if (user.role === 'admin'){
+          return res.redirect('/admindashboard')
+        }
         return res.redirect('/');
       });
     })(req, res, next);
   });
-  
-
 
 
 
