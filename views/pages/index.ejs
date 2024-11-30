@@ -32,7 +32,7 @@
               <th>Start Time</th>
               <th>End Date</th>
               <th>End Time</th>
-              <th colspan="2">Actions</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -46,15 +46,8 @@
                 <td><%= item.e_start_time %></td>
                 <td><%= item.e_end_date %></td>
                 <td><%= item.e_end_time %></td>
-                <td>
-                  <a href="/event/edit/<%= item.e_id %>" class="btn btn-sm btn-warning">
-                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                  </a>
-                </td>
-                <td>
-                  <a href="/event/delete/<%= item.e_id %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete?')">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                  </a>
+              
+               
                 </td>
               </tr>
             <% }) %>
