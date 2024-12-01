@@ -65,7 +65,9 @@ conn.connect((err) => {
       e_end_date DATE NOT NULL,
       e_added_date DATE,
       e_desc TEXT,
-      e_location VARCHAR(200)
+      e_location VARCHAR(200),
+      e_start_time TIME NOT NULL,
+      e_end_time TIME NOT NULL
     )`;
   conn.query(createEventsTable);
 
@@ -106,7 +108,19 @@ conn.connect((err) => {
     });
   });
 
-  app.get('/event/add', (req, res) => {
+    /* Middleware for route protection */
+    const isAuthenticated = (req, res, next) => {
+      if (req.isAuthenticated()) return next();
+      return res.redirect('/signin'); // Redirect to sign in if not authenticated
+    };
+  
+    const isAdmin = (req, res, next) => {
+      if (req.isAuthenticated() && req.user.role === 'admin') return next();
+      return res.status(403).send('Access denied. Admins only.');
+    };
+  
+
+  app.get('/event/add', isAdmin, (req, res) => {
     res.render('pages/add-event', {
       siteTitle,
       pageTitle: 'Add new event',
@@ -114,10 +128,10 @@ conn.connect((err) => {
     });
   });
 
-  app.post('/event/add', (req, res) => {
+  app.post('/event/add', isAdmin, (req, res) => {
     const query = `
-      INSERT INTO events (e_name, e_start_date, e_end_date, e_added_date, e_desc, e_location)
-      VALUES (?, ?, ?, ?, ?, ?)`;
+      INSERT INTO events (e_name, e_start_date, e_end_date, e_added_date, e_desc, e_location, e_start_time, e_end_time)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [
       req.body.e_name,
       dateFormat(req.body.e_start_date, 'yyyy-mm-dd'),
@@ -125,6 +139,8 @@ conn.connect((err) => {
       dateFormat(new Date(), 'yyyy-mm-dd'),
       req.body.e_desc,
       req.body.e_location,
+      req.body.e_start_time,
+      req.body.e_end_time
     ];
   
     conn.query(query, values, (err) => {
@@ -132,11 +148,11 @@ conn.connect((err) => {
         console.error('Error inserting event:', err.message); // Log the error message
         return res.status(500).send('Error adding event');
       }
-      res.redirect('/');
+      res.redirect('/admindashboard');
     });
   });
 
-  app.get('/event/edit/:id', (req, res ) => {
+  app.get('/event/edit/:id', isAdmin, (req, res ) => {
     const query = 'SELECT * FROM events WHERE e_id = ?';
     conn.query(query, [req.params.id], (err, result) => {
       if (err || result.length === 0) {
@@ -155,7 +171,7 @@ conn.connect((err) => {
     });
   });
 
-  app.post('/event/edit', (req, res) => {
+  app.post('/event/edit', isAdmin, (req, res) => {
     const query = `
       UPDATE events SET
       e_name = ?, e_start_date = ?, e_end_date = ?, e_desc = ?, e_location = ?
@@ -176,14 +192,14 @@ conn.connect((err) => {
       }
 
       if (result.affectedRows) {
-        res.redirect('/');
+        res.redirect('/admindashboard');
       } else {
         res.status(404).send('Event not found');
       }
     });
   });
 
-  app.get('/user/delete/:id', (req, res) => {
+  app.get('/user/delete/:id', isAdmin, (req, res) => {
     const userId = req.params.id;
   
     // First, delete associations in user_events
@@ -248,12 +264,15 @@ conn.connect((err) => {
         if (user.role === 'attendee') {
           return res.redirect('/userdashboard');
         }
+        else if (user.role === 'admin'){
+          return res.redirect('/admindashboard')
+        }
         return res.redirect('/');
       });
     })(req, res, next);
   });
 
-  app.get('/admindashboard', (req, res) => {
+  app.get('/admindashboard', isAdmin,(req, res) => {
     if (!req.isAuthenticated() || req.user.role !== 'admin') {
       return res.redirect('/signin'); // Redirect to sign in page if not authenticated or not an admin
     }
@@ -322,7 +341,7 @@ conn.connect((err) => {
   });
 
   // Add this route in your server.js file
-  app.get('/user/delete/:id', (req, res) => {
+  app.get('/user/delete/:id', isAuthenticated, (req, res) => {
     const userId = req.params.id;
 
     const query = 'DELETE FROM users WHERE id = ?';
@@ -341,7 +360,7 @@ conn.connect((err) => {
   });
 
   // Get events attended by the user
-  app.get('/user/events/:userId', (req, res) => {
+  app.get('/user/events/:userId', isAuthenticated, (req, res) => {
     const userId = req.params.userId;
 
     const query = `
@@ -370,7 +389,7 @@ conn.connect((err) => {
   });
 
   // Get users attending an event
-  app.get('/event/attendees/:eventId', (req, res) => {
+  app.get('/event/attendees/:eventId', isAuthenticated,(req, res) => {
     const eventId = req.params.eventId;
 
     const query = `
@@ -393,7 +412,7 @@ conn.connect((err) => {
     });
   });
 
-  app.post('/event/join/:id', (req, res) => {
+  app.post('/event/join/:id',isAuthenticated,  (req, res) => {
     const eventId = req.params.id;
     const userId = req.user.id; // Assuming user is authenticated
     const username = req.user.username;
@@ -425,7 +444,7 @@ conn.connect((err) => {
     });
   });
 
-  app.get('/user/joined-events', (req, res) => {
+  app.get('/user/joined-events', isAuthenticated,(req, res) => {
     if (!req.isAuthenticated()) {
       return res.redirect('/signin'); // Redirect to sign in page if not authenticated
     }
@@ -456,8 +475,7 @@ conn.connect((err) => {
       });
     });
   });
-  app.use(express.static('public'));
-
+  
 
   app.listen(3000, () => {
     console.log('Server started on port 3000 | 8080 if running on Docker...');
