@@ -232,18 +232,20 @@ conn.connect((err) => {
   });
 
   app.post('/signup', (req, res) => {
-    const { username, password, role } = req.body;
+    const { username, password } = req.body;  // Ignore role field
+    const role = 'attendee'; // Set role to 'attendee' by default
 
     bcrypt.hash(password, 10, (err, hashedPassword) => {
-      if (err) return res.status(500).send('Error hashing password');
+        if (err) return res.status(500).send('Error hashing password');
 
-      const query = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
-      conn.query(query, [username, hashedPassword, role], (err) => {
-        if (err) return res.status(500).send('Error creating user');
-        res.redirect('/signin');
-      });
+        const query = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
+        conn.query(query, [username, hashedPassword, role], (err) => {
+            if (err) return res.status(500).send('Error creating user');
+            res.redirect('/signin');
+        });
     });
   });
+
 
   app.get('/signin', (req, res) => {
     if (req.isAuthenticated()) {

@@ -1,0 +1,88 @@
+/* General styles for Sign Up */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e8f5e9; /* Light green background */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #2e7d32; /* Dark green */
+    margin-bottom: 20px;
+  }
+  
+  form {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555555;
+  }
+  
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: #4caf50; /* Bright green */
+    box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4caf50; /* Bright green */
+    color: #ffffff;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #388e3c; /* Slightly darker green */
+  }
+  
+  a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #4caf50;
+    font-size: 14px;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 500px) {
+    form {
+      padding: 20px;
+    }
+  }
+  
