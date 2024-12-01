@@ -65,7 +65,9 @@ conn.connect((err) => {
       e_end_date DATE NOT NULL,
       e_added_date DATE,
       e_desc TEXT,
-      e_location VARCHAR(200)
+      e_location VARCHAR(200),
+      e_start_time TIME NOT NULL,
+      e_end_time TIME NOT NULL
     )`;
   conn.query(createEventsTable);
 
@@ -116,8 +118,8 @@ conn.connect((err) => {
 
   app.post('/event/add', (req, res) => {
     const query = `
-      INSERT INTO events (e_name, e_start_date, e_end_date, e_added_date, e_desc, e_location)
-      VALUES (?, ?, ?, ?, ?, ?)`;
+      INSERT INTO events (e_name, e_start_date, e_end_date, e_added_date, e_desc, e_location, e_start_time, e_end_time)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [
       req.body.e_name,
       dateFormat(req.body.e_start_date, 'yyyy-mm-dd'),
@@ -125,6 +127,8 @@ conn.connect((err) => {
       dateFormat(new Date(), 'yyyy-mm-dd'),
       req.body.e_desc,
       req.body.e_location,
+      req.body.e_start_time,
+      req.body.e_end_time
     ];
   
     conn.query(query, values, (err) => {
@@ -247,6 +251,9 @@ conn.connect((err) => {
         // Role-based redirection
         if (user.role === 'attendee') {
           return res.redirect('/userdashboard');
+        }
+        else if (user.role === 'admin'){
+          return res.redirect('/admindashboard')
         }
         return res.redirect('/');
       });
