@@ -20,7 +20,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: node_crud
     ports:
-      - "3309:3306"  # Map host port 3309 to container port 3306
+      - "3355:3306"  # Map host port 3309 to container port 3306
     volumes: ['./:/usr/src/app']
 
   phpmyadmin:
