@@ -7,13 +7,6 @@
       <h1>Welcome to the Event Management System</h1>
       <p>Manage and view all your events from here.</p>
       
-      <% if (user) { %>
-        <!-- Show Sign Out button if the user is logged in -->
-        <a href="/logout" class="btn btn-danger">Sign Out</a>
-      <% } else { %>
-        <!-- Show Sign In button if the user is not logged in -->
-        <a href="/signin" class="btn btn-primary">Sign In</a>
-      <% } %>
       
       <br/><br/>
     </div>
@@ -32,7 +25,7 @@
               <th>Start Time</th>
               <th>End Date</th>
               <th>End Time</th>
-              <th colspan="2">Actions</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -46,15 +39,8 @@
                 <td><%= item.e_start_time %></td>
                 <td><%= item.e_end_date %></td>
                 <td><%= item.e_end_time %></td>
-                <td>
-                  <a href="/event/edit/<%= item.e_id %>" class="btn btn-sm btn-warning">
-                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                  </a>
-                </td>
-                <td>
-                  <a href="/event/delete/<%= item.e_id %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete?')">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
-                  </a>
+              
+               
                 </td>
               </tr>
             <% }) %>
