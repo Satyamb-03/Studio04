@@ -19,5 +19,14 @@
   <body>
     <% include ../partials/navbar %>
     <!-- Your page content goes here -->
+    <div>
+      <% if (user) { %>
+        <!-- Show Sign Out button if the user is logged in -->
+        <a href="/logout" class="btn btn-danger float-right">Sign Out</a>
+      <% } else { %>
+        <!-- Show Sign In button if the user is not logged in -->
+        <a href="/signin" class="btn btn-primary float-right">Sign In</a>
+      <% } %>
+    </div>
   </body>
 </html>
